@@ -1,0 +1,683 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ECOCLIMA CONECTA — Educação Ambiental</title>
+  <meta name="description" content="Plataforma para educação ambiental e sustentabilidade no setor de climatização" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    :root{
+      --green-600:#0b6b3a;
+      --green-400:#2fa36a;
+      --blue-600:#0b4f66;
+      --gray-900:#0f1724;
+      --gray-700:#374151;
+      --muted:#f4f6f8;
+      --card-shadow: 0 8px 24px rgba(15,23,36,.08);
+      --glass: rgba(255,255,255,0.92);
+      --gap:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      margin:0; color:var(--gray-900);
+      background:linear-gradient(180deg,#f7fbf8 0%, #eef6fb 100%);
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    /* Cabeçalho / Navegação */
+    header{
+      position:sticky;
+      top:0;
+      background:rgba(255,255,255,0.95);
+      backdrop-filter: blur(6px);
+      border-bottom:1px solid #e6eef0;
+      z-index:1000; /* Aumentado para ficar acima do mapa */
+    }
+    .container{max-width:1150px;margin:0 auto;padding:20px}
+    .nav{display:flex;align-items:center;justify-content:space-between;gap:12px}
+    .brand{display:flex;align-items:center;gap:12px}
+    .logo{width:48px;height:48px;border-radius:12px;background:linear-gradient(135deg,var(--green-600),var(--blue-600));display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-family:inherit}
+    nav ul{display:flex;gap:18px;list-style:none;margin:0;padding:0}
+    nav a{color:var(--gray-700);text-decoration:none;font-weight:600}
+    .cta{display:flex;gap:10px;align-items:center}
+    .btn{padding:10px 14px;border-radius:10px;border:0;cursor:pointer;font-weight:700}
+    .btn-primary{background:var(--green-600);color:white}
+    .btn-ghost{background:transparent;color:var(--gray-700)}
+
+    /* Seção Hero */
+    .hero{display:grid;grid-template-columns:1fr 480px;gap:36px;align-items:center;padding:36px 0} /* Reduzido de 48px para 36px */
+    .hero h1{font-size:34px;margin:0 0 12px;line-height:1.05}
+    .hero p{color:var(--gray-700);line-height:1.5}
+    .hero .card{background:var(--glass);padding:18px;border-radius:14px;box-shadow:var(--card-shadow)}
+
+    .hero-img{width:100%;height:320px;border-radius:14px;object-fit:cover;box-shadow:var(--card-shadow);display:block}
+
+    /* Seções */
+    section{padding:24px 0} /* Reduzido de 36px para 24px */
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+    .card{
+      background:white;
+      padding:16px;
+      border-radius:12px;
+      box-shadow:var(--card-shadow);
+      transition: transform 0.3s ease; /* Adicionada transição para todos os cards */
+    }
+    .card:hover {
+      transform: translateY(-5px); /* Mesma animação dos cards de educação */
+    }
+    .muted{color:var(--gray-700)}
+
+    /* Layout do Mapa */
+    .map-wrap{
+      display:grid;
+      grid-template-columns:1fr 360px;
+      gap:18px;
+      align-items:start;
+      margin-top:12px;
+    }
+    #map{
+      width:100%;
+      height:500px; /* Altura reduzida para combinar com a lateral */
+      border-radius:12px;
+      border:1px solid #e6eef0;
+      position:relative; /* Garante que o z-index funcione */
+      z-index:1; /* Mantém o mapa abaixo do header */
+    }
+    .map-sidebar{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      height:500px; /* Mesma altura do mapa */
+    }
+    .search-box{display:flex;gap:8px}
+    .search-box input{flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef0;font-size:14px}
+    .search-box button{padding:10px 12px;border-radius:8px;border:0;background:var(--green-600);color:white;cursor:pointer}
+
+    .listings{
+      overflow:auto;
+      max-height:380px; /* Ajustado para caber dentro da altura total */
+      display:grid;
+      gap:10px;
+      flex:1;
+    }
+
+    /* Rodapé */
+    footer{padding:20px 0;color:var(--gray-700)} /* Reduzido de 28px para 20px */
+
+    /* Detalhes visuais */
+    .pill{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg,var(--green-400),var(--blue-600));color:white;font-weight:700}
+    .meta{font-size:13px;color:var(--gray-700);display:flex;gap:8px;align-items:center}
+
+    /* Seção de Educação */
+    .education-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-top: 20px; /* Reduzido de 24px para 20px */
+    }
+    .education-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: var(--card-shadow);
+      transition: transform 0.3s ease;
+    }
+    .education-card:hover {
+      transform: translateY(-5px);
+    }
+    .education-card h3 {
+      margin-top: 0;
+      color: var(--green-600);
+      border-bottom: 2px solid var(--green-400);
+      padding-bottom: 8px;
+    }
+    .material-icon {
+      font-size: 24px;
+      margin-right: 10px;
+      vertical-align: middle;
+    }
+    .legislation-list {
+      margin: 12px 0;
+      padding-left: 20px;
+    }
+    .legislation-list li {
+      margin-bottom: 8px;
+    }
+    .example-box {
+      background-color: #f0f9f4;
+      border-left: 4px solid var(--green-400);
+      padding: 12px;
+      margin-top: 12px;
+      border-radius: 0 8px 8px 0;
+    }
+
+    /* Design Responsivo */
+    @media (max-width:1100px){
+      .hero{grid-template-columns:1fr 360px}
+      .map-wrap{grid-template-columns:1fr 320px}
+    }
+    @media (max-width:900px){
+      nav ul{display:none}
+      .hero{grid-template-columns:1fr}
+      .map-wrap{
+        grid-template-columns:1fr;
+        gap:12px;
+      }
+      #map{height:420px}
+      .map-sidebar{height:auto}
+    }
+    @media (max-width:600px){
+      .logo{width:40px;height:40px}
+      .hero-img{height:220px}
+      #map{height:360px}
+      .map-sidebar{height:auto}
+    }
+
+    /* Card de listagem */
+    .listing-card{
+      padding:10px;
+      border-radius:10px;
+      background:#fbfeff;
+      border:1px solid #eef6f8;
+      cursor:pointer;
+      transition: transform 0.3s ease; /* Animação para os cards da lista também */
+    }
+    .listing-card:hover {
+      transform: translateY(-3px); /* Animação mais suave para os cards da lista */
+    }
+    .listing-card strong{display:block}
+    .listing-meta{font-size:13px;color:var(--gray-700)}
+
+    /* Estilos do Leaflet */
+    .leaflet-popup-content { margin: 8px 12px; }
+    .leaflet-popup-content-wrapper { border-radius: 8px; }
+    .leaflet-container {
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <div class="brand">
+        <div class="logo">EC</div>
+        <div>
+          <div style="font-weight:800">ECOCLIMA CONECTA</div>
+          <div style="font-size:12px;color:var(--gray-700)">Educação ambiental para climatização</div>
+        </div>
+      </div>
+
+      <nav>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#sobre">Sobre</a></li>
+          <li><a href="#mapa">Mapa</a></li>
+          <li><a href="#educacao">Educação</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Home / Hero -->
+    <section id="home" class="hero">
+      <div>
+        <div class="meta">Plataforma • Sustentabilidade • Educação Ambiental</div>
+        <h1>Informações sobre descarte correto para um setor de climatização mais sustentável</h1>
+        <p class="muted">Aprenda sobre legislações, obrigações e práticas corretas para descarte de materiais. Reduza impactos ambientais e evite penalidades — tudo em um só lugar.</p>
+
+        <div style="margin-top:18px;display:flex;gap:10px;flex-wrap:wrap">
+          <div class="card" style="flex:1;min-width:180px">
+            <strong>Legislações</strong>
+            <div class="muted" style="font-size:13px">Conheça as leis e regulamentações ambientais.</div>
+          </div>
+          <div class="card" style="flex:1;min-width:180px">
+            <strong>Pontos de Descarte</strong>
+            <div class="muted" style="font-size:13px">Localize pontos de coleta e empresas parceiras próximas.</div>
+          </div>
+          <div class="card" style="flex:1;min-width:180px">
+            <strong>Orientações</strong>
+            <div class="muted" style="font-size:13px">Aprenda a descartar corretamente cada tipo de material.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="card">
+          <img class="hero-img" src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1200&auto=format&fit=crop&s=placeholder" alt="imagem destaque educação ambiental"/>
+        </div>
+        <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
+          <div class="muted">Equipe: Jonas S. de Avila • Vitor R. Corrêa • Pedro E. Kunzler • Gabriel O. Abreu • Eduardo Paier</div>
+          <div class="pill">Protótipo</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sobre -->
+    <section id="sobre">
+      <div style="display:flex;gap:22px;align-items:flex-start;flex-wrap:wrap">
+        <div style="flex:1;min-width:260px">
+          <h2>Sobre</h2>
+          <p class="muted">O ECOCLIMA CONECTA nasceu para reduzir o descarte inadequado de materiais do setor de climatização, promovendo educação ambiental e práticas sustentáveis. A plataforma fornece informações sobre legislações, obrigações e destinação correta de resíduos.</p>
+
+          <h3>Missão</h3>
+          <p class="muted">Promover a educação ambiental e a destinação correta de resíduos, reduzindo impacto ambiental e custos para profissionais.</p>
+
+          <h3>Visão</h3>
+          <p class="muted">Ser referência regional em educação ambiental para o setor de climatização, apoiando a economia circular.</p>
+
+          <h3>Valores</h3>
+          <ul class="muted">
+            <li>Transparência</li>
+            <li>Sustentabilidade</li>
+            <li>Educação</li>
+            <li>Praticidade</li>
+          </ul>
+        </div>
+
+        <div style="width:320px;min-width:240px">
+          <div class="card">
+            <strong>Problema que resolvemos</strong>
+            <p class="muted" style="font-size:14px">Descarte incorreto, falta de conhecimento sobre legislações ambientais e dificuldade de encontrar informações confiáveis — causando danos ambientais e penalidades.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mapa de Descarte -->
+    <section id="mapa">
+      <h2>Mapa de Descarte</h2>
+      <p class="muted">Encontre pontos de descarte, recicladores e empresas parceiras.</p>
+
+      <div class="map-wrap">
+        <!-- Mapa -->
+        <div>
+          <div id="map" class="card"></div>
+        </div>
+
+        <!-- Barra lateral -->
+        <aside class="map-sidebar">
+          <div class="card" style="display:flex;flex-direction:column;gap:12px;height:100%;">
+            <strong>Pontos de Descarte</strong>
+            <div class="muted" style="font-size:13px">Clique em um ponto para ver detalhes</div>
+            <div style="display:flex;gap:8px">
+              <input id="list-search" placeholder="Filtrar lista (nome / endereço)" style="flex:1;padding:8px;border-radius:8px;border:1px solid #e6eef0"/>
+              <button class="btn btn-primary" id="applyFilterBtn">Aplicar</button>
+            </div>
+            <hr style="border:none;border-top:1px solid #eef6f8;margin:8px 0"/>
+            <div id="listings" class="listings"></div>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <!-- Educação Ambiental -->
+    <section id="educacao">
+      <h2>Educação Ambiental</h2>
+      <p class="muted">Informações completas sobre legislações, obrigações e práticas corretas para descarte de diferentes tipos de materiais.</p>
+
+      <div class="education-grid">
+        <!-- Alumínio, cobre, papelão, plástico e isopor -->
+        <div class="education-card">
+          <h3><span class="material-icon">♻️</span> Materiais Recicláveis</h3>
+          <p><strong>Alumínio, cobre, papelão, plástico e isopor</strong></p>
+          
+          <h4>Legislações principais</h4>
+          <ul class="legislation-list">
+            <li>Lei nº 12.305/2010 – Política Nacional de Resíduos Sólidos (PNRS)</li>
+            <li>Decreto nº 10.936/2022 – regulamenta a PNRS</li>
+            <li>Leis estaduais e municipais de coleta seletiva</li>
+          </ul>
+          
+          <h4>Órgãos responsáveis</h4>
+          <ul>
+            <li>IBAMA (nível federal)</li>
+            <li>Secretarias estaduais e municipais de meio ambiente e limpeza urbana</li>
+          </ul>
+          
+          <h4>Obrigações</h4>
+          <ul>
+            <li>Geradores de resíduos (indústrias, comércios, residências) devem separar materiais recicláveis</li>
+            <li>Municípios precisam manter sistemas de coleta seletiva e destinação adequada</li>
+            <li>Empresas devem adotar logística reversa quando aplicável</li>
+          </ul>
+          
+          <div class="example-box">
+            <strong>Exemplo prático:</strong> Papelão, alumínio e cobre podem ser vendidos a cooperativas ou sucateiros. Plástico e isopor devem ser encaminhados para reciclagem ou ecopontos.
+          </div>
+        </div>
+
+        <!-- Entulho de obra -->
+        <div class="education-card">
+          <h3><span class="material-icon">🏗️</span> Entulho de Obra</h3>
+          <p><strong>Resíduos da construção civil</strong></p>
+          
+          <h4>Legislações principais</h4>
+          <ul class="legislation-list">
+            <li>Lei nº 12.305/2010 (PNRS)</li>
+            <li>Resolução CONAMA nº 307/2002 – diretrizes para resíduos da construção civil</li>
+            <li>Resolução CONAMA nº 448/2012 – atualização da 307</li>
+          </ul>
+          
+          <h4>Classificação do entulho</h4>
+          <ul>
+            <li><strong>Classe A:</strong> materiais reutilizáveis (tijolo, concreto, cerâmica)</li>
+            <li><strong>Classe B:</strong> recicláveis (plástico, papel, metal, vidro)</li>
+            <li><strong>Classe C:</strong> resíduos sem tecnologia viável de reciclagem</li>
+            <li><strong>Classe D:</strong> perigosos (tintas, solventes, amianto)</li>
+          </ul>
+          
+          <h4>Obrigações</h4>
+          <ul>
+            <li>Construtoras devem apresentar Plano de Gerenciamento de Resíduos da Construção Civil (PGRCC)</li>
+            <li>Transportadores precisam estar licenciados</li>
+          </ul>
+          
+          <div class="example-box">
+            <strong>Exemplo prático:</strong> Restos de concreto podem ser triturados e usados em bases de pavimento. Metais e cabos elétricos devem ser encaminhados para reciclagem.
+          </div>
+        </div>
+
+        <!-- Eletrônicos -->
+        <div class="education-card">
+          <h3><span class="material-icon">💻</span> Eletrônicos</h3>
+          <p><strong>E-lixo, placas, baterias</strong></p>
+          
+          <h4>Legislações principais</h4>
+          <ul class="legislation-list">
+            <li>PNRS (Lei nº 12.305/2010)</li>
+            <li>Decreto nº 10.936/2022</li>
+            <li>Lei estadual SP nº 13.576/2009 (primeira lei sobre e-lixo no Brasil)</li>
+          </ul>
+          
+          <h4>Projetos em tramitação</h4>
+          <ul>
+            <li>PL 4094/2024 – cria programa nacional de coleta e reciclagem de eletrônicos</li>
+            <li>PL 194/2024 – endurece regras para descarte de baterias</li>
+          </ul>
+          
+          <h4>Órgãos responsáveis</h4>
+          <ul>
+            <li>IBAMA, órgãos estaduais, municípios</li>
+            <li>Empresas fabricantes/importadoras</li>
+          </ul>
+          
+          <h4>Obrigações</h4>
+          <ul>
+            <li>Implantar logística reversa para eletroeletrônicos, pilhas e baterias</li>
+            <li>Lojas devem oferecer pontos de coleta</li>
+          </ul>
+          
+          <div class="example-box">
+            <strong>Exemplo prático:</strong> Celulares antigos e placas de computador devem ser entregues em ecopontos. Baterias de notebook têm descarte controlado por conter metais tóxicos.
+          </div>
+        </div>
+
+        <!-- Fluidos refrigerantes -->
+        <div class="education-card">
+          <h3><span class="material-icon">❄️</span> Fluidos Refrigerantes</h3>
+          <p><strong>Ar-condicionado, geladeiras, freezers</strong></p>
+          
+          <h4>Legislações principais</h4>
+          <ul class="legislation-list">
+            <li>Convenção de Montreal (1987) – tratado internacional sobre substâncias que destroem a camada de ozônio</li>
+            <li>Regulamentações do IBAMA (controle de importação, comercialização e destinação de gases)</li>
+            <li>Normas ABNT (ex: NBR 16069 – segurança em fluidos inflamáveis)</li>
+          </ul>
+          
+          <h4>Obrigações</h4>
+          <ul>
+            <li>Substituir fluidos nocivos (ex: CFCs e HCFCs) por gases menos poluentes (HFCs, naturais)</li>
+            <li>Recolhimento e regeneração obrigatória por técnicos credenciados</li>
+            <li>Proibido liberar gases na atmosfera</li>
+          </ul>
+          
+          <div class="example-box">
+            <strong>Exemplo prático:</strong> Oficinas de refrigeração devem ter equipamento de recolhimento. Gás R-22 (HCFC) está em processo de eliminação no Brasil.
+          </div>
+        </div>
+
+        <!-- Motores e peças metálicas -->
+        <div class="education-card">
+          <h3><span class="material-icon">⚙️</span> Motores e Peças Metálicas</h3>
+          
+          <h4>Legislações principais</h4>
+          <ul class="legislation-list">
+            <li>Lei nº 12.305/2010 (PNRS)</li>
+            <li>Lei nº 9.605/1998 (Crimes Ambientais)</li>
+          </ul>
+          
+          <h4>Obrigações</h4>
+          <ul>
+            <li>Encaminhar motores e sucatas metálicas para recicladoras licenciadas</li>
+            <li>Empresas devem comprovar destinação ambientalmente correta</li>
+          </ul>
+          
+          <div class="example-box">
+            <strong>Exemplo prático:</strong> Motores usados podem ser vendidos para fundições ou recicladoras. Oficinas mecânicas precisam ter contrato com empresa licenciada para destinação de sucata.
+          </div>
+        </div>
+
+        <!-- Resíduos em geral -->
+        <div class="education-card">
+          <h3><span class="material-icon">🗑️</span> Resíduos em Geral</h3>
+          
+          <h4>Legislações principais</h4>
+          <ul class="legislation-list">
+            <li>Lei nº 9.605/1998 – Lei de Crimes Ambientais</li>
+            <li>Lei nº 15.088/2025 – proíbe a importação de resíduos sólidos para o Brasil (plásticos, metais, papel, vidro)</li>
+          </ul>
+          
+          <h4>Obrigações</h4>
+          <ul>
+            <li>Classificar corretamente os resíduos</li>
+            <li>Priorizar não geração, redução, reutilização e reciclagem</li>
+            <li>Rejeitos devem ir para aterros licenciados</li>
+          </ul>
+          
+          <h4>Punições</h4>
+          <ul>
+            <li>Multas que podem ultrapassar R$ 50 milhões em casos de grandes danos ambientais</li>
+            <li>Responsabilidade civil, administrativa e penal</li>
+          </ul>
+          
+          <div class="example-box">
+            <strong>Exemplo prático:</strong> Prefeituras devem manter aterros sanitários licenciados (lixões são proibidos). Empresas são obrigadas a prestar contas sobre a destinação de seus resíduos.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer style="margin-top:20px"> <!-- Reduzido de 28px para 20px -->
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <div class="muted">© 2025 ECOCLIMA CONECTA — Protótipo</div>
+        <div class="muted">Equipe: Jonas S. de Avila, Vitor R. Corrêa, Pedro E. Kunzler, Gabriel O. Abreu, Eduardo Paier</div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script>
+    // Dados iniciais de exemplo
+    const initialPoints = [
+      { 
+        id: 1, 
+        name: 'Coleta Ratinho', 
+        type: 'coleta', 
+        lat: -29.6917, 
+        lng: -51.1348, 
+        address: 'RUA JOAO LUCIANO DA ROSA, 640 - CANUDOS, NOVO HAMBURGO, RS, 93542-610', 
+        contact: 'Arnaldo Rodrigues - 51 98032-0064', 
+        email: 'coletaratinho.business@gmall.com',
+        notes: 'Resíduos: Ar condicionados',
+        site: 'https://ratinhocoleta.com/oficial'
+      },
+      { 
+        id: 2, 
+        name: 'eSucata', 
+        type: 'reciclador', 
+        lat: -29.7600, 
+        lng: -51.1470, 
+        address: 'Avenida Gettilio Vargas, 519 - Sao Leopoldo, RS', 
+        contact: 'Marcos Diniz - 51 99378-6133', 
+        email: 'comercial@e-sucata.com',
+        notes: 'Resíduos: Eletrônicos e catalisadores automotivos',
+        cnpj: '23.841.999/0003-69',
+        site: 'https://www.e-sucata.com/quem-somos'
+      },
+      { 
+        id: 3, 
+        name: 'Empresarial', 
+        type: 'reciclador', 
+        lat: -29.3760, 
+        lng: -51.1140, 
+        address: 'Rua Tia Gretel, 46, Nova Petropolis - RS, 95150-000', 
+        contact: 'Fernando Buhs - 54 98433-3009', 
+        email: 'nandobuhs@hotmail.com',
+        notes: 'Resíduos: Restos de obra e resíduos no geral',
+        cnpj: '27.111.685/0001-08'
+      },
+      { 
+        id: 4, 
+        name: 'TF Residuos', 
+        type: 'coleta', 
+        lat: -30.1080, 
+        lng: -51.2300, 
+        address: 'Av. Palmira Gobbi, 498 - Humaita, Porto Alegre - RS, 90250-210', 
+        contact: 'João Fontes - 51 98912-6346', 
+        email: 'tfresiduos@gmail.com',
+        notes: 'Resíduos: Geral',
+        cnpj: '53.410.202/0001-78'
+      },
+      { 
+        id: 5, 
+        name: 'Recicla RS', 
+        type: 'reciclador', 
+        lat: -29.1640, 
+        lng: -51.1790, 
+        address: 'ERS-122, 1850 - Cinquentenario, Caxias do Sul - RS, 95010-550', 
+        contact: 'Ricardo Roese - 84 3477-1175', 
+        email: 'comercial@recicla.rs',
+        notes: 'Resíduos: Todo tipo de resíduo',
+        cnpj: '41.182.707/30001-78',
+        site: 'https://www.recicla.rs'
+      }
+    ];
+
+    let map, markers = [];
+
+    function initMap() {
+      // Centro padrão (região de Taquara)
+      const center = [-29.660, -51.134];
+
+      map = L.map('map').setView(center, 12);
+
+      // Adicionar tile layer do OpenStreetMap
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      // Carregar pontos
+      renderMarkers(initialPoints);
+      renderListings(initialPoints);
+
+      // Event listeners
+      document.getElementById('applyFilterBtn').addEventListener('click', applyListFilter);
+      document.getElementById('list-search').addEventListener('input', applyListFilter);
+    }
+
+    function renderMarkers(points) {
+      // Remover marcadores existentes
+      markers.forEach(marker => map.removeLayer(marker));
+      markers = [];
+
+      points.forEach(item => {
+        const marker = L.marker([item.lat, item.lng]).addTo(map);
+        
+        const popupContent = `
+          <div style="min-width:200px">
+            <strong>${escapeHtml(item.name)}</strong>
+            <div style="font-size:13px;color:#555">${escapeHtml(item.type)}</div>
+            <div style="margin-top:8px;font-size:13px">
+              ${escapeHtml(item.address || '')}<br/>
+              Contato: ${escapeHtml(item.contact || '')}<br/>
+              ${item.email ? `E-mail: ${escapeHtml(item.email)}<br/>` : ''}
+              ${item.cnpj ? `CNPJ: ${escapeHtml(item.cnpj)}<br/>` : ''}
+              ${item.site ? `Site: <a href="${escapeHtml(item.site)}" target="_blank">${escapeHtml(item.site)}</a><br/>` : ''}
+              <small>${escapeHtml(item.notes || '')}</small>
+            </div>
+          </div>`;
+        
+        marker.bindPopup(popupContent);
+        marker._data = item;
+        markers.push(marker);
+      });
+    }
+
+    function renderListings(points) {
+      const el = document.getElementById('listings');
+      el.innerHTML = '';
+      
+      if (!points.length) {
+        el.innerHTML = '<div class="muted">Nenhum ponto encontrado.</div>';
+        return;
+      }
+      
+      points.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'listing-card';
+        div.innerHTML = `
+          <strong>${escapeHtml(item.name)}</strong>
+          <div class="listing-meta">${escapeHtml(item.address || '')}</div>
+          <div style="margin-top:6px;font-size:13px">
+            Contato: ${escapeHtml(item.contact || '')} • 
+            <span style="font-weight:700">${escapeHtml(item.type)}</span><br/>
+            ${item.email ? `<small>E-mail: ${escapeHtml(item.email)}</small><br/>` : ''}
+            <small>${escapeHtml(item.notes || '')}</small>
+          </div>`;
+        
+        div.addEventListener('click', () => {
+          const marker = markers.find(m => m._data && m._data.id === item.id);
+          if (marker) {
+            map.setView(marker.getLatLng(), 15);
+            marker.openPopup();
+          }
+        });
+        
+        el.appendChild(div);
+      });
+    }
+
+    function applyListFilter() {
+      const q = (document.getElementById('list-search').value || '').toLowerCase();
+      const filtered = initialPoints.filter(p => {
+        const hay = (p.name + p.address + p.notes + (p.contact || '') + (p.email || '')).toLowerCase();
+        return !q || hay.includes(q);
+      });
+      
+      renderMarkers(filtered);
+      renderListings(filtered);
+      
+      if (filtered.length && map) {
+        const firstPoint = filtered[0];
+        map.setView([firstPoint.lat, firstPoint.lng], 12);
+      }
+    }
+
+    function escapeHtml(text) {
+      if (!text) return '';
+      return text.replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+    }
+
+    // Inicializar mapa quando a página carregar
+    document.addEventListener('DOMContentLoaded', initMap);
+  </script>
+</body>
+</html>
