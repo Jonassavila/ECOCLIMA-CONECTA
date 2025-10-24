@@ -1,0 +1,10 @@
+# robots.txt - ECOCLIMA CONECTA
+
+User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /private/
+
+Sitemap: https://ecoclimaconecta.netlify.app/sitemap.xml
+
+# Crawl-delay: 1
