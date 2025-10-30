@@ -177,7 +177,7 @@
     /* Componente de busca */
     .search-box{display:flex;gap:8px}
     .search-box input{flex:1;padding:10px;border-radius:8px;border:1px solid #e6eef0;font-size:14px}
-    .search-box button{padding:10px 12px;border-radius:8px;border:0;background:var(--green-600);color:white;cursor:pointer}
+    .search-box button{padding:10px 12px;border-radius:8px;border=0;background:var(--green-600);color:white;cursor:pointer}
     .listings{overflow:auto;max-height:380px;display:grid;gap:10px;flex:1;}
 
     /* Footer */
@@ -220,6 +220,232 @@
     }
     .faq-item:hover {
       transform: translateY(-5px);
+    }
+
+    /* Estilos para elementos clicáveis */
+    .clickable-phone {
+      color: var(--green-600);
+      text-decoration: none;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .clickable-phone:hover {
+      color: var(--blue-600);
+      text-decoration: underline;
+    }
+    .clickable-address {
+      color: var(--gray-700);
+      text-decoration: none;
+      cursor: pointer;
+      transition: color 0.2s ease;
+    }
+    .clickable-address:hover {
+      color: var(--green-600);
+      text-decoration: underline;
+    }
+    .clickable-name {
+      color: var(--green-600);
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      padding: 2px 4px;
+      border-radius: 4px;
+    }
+    .clickable-name:hover {
+      color: var(--blue-600);
+      text-decoration: underline;
+      background-color: rgba(11, 107, 58, 0.1);
+    }
+
+    /* Modal para seleção de app de navegação */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 12px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      transform: translateY(20px);
+      transition: transform 0.3s ease;
+    }
+    .modal-overlay.active .modal-content {
+      transform: translateY(0);
+    }
+    .modal-title {
+      margin-top: 0;
+      color: var(--green-600);
+      text-align: center;
+    }
+    .modal-phone {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 600;
+      margin: 10px 0 20px;
+      color: var(--gray-900);
+    }
+    .modal-options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin: 20px 0;
+    }
+    .modal-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e6eef0;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    .modal-option:hover {
+      background: #f0f9f4;
+      border-color: var(--green-400);
+      transform: translateY(-2px);
+    }
+    .modal-option-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .modal-option-text {
+      flex: 1;
+    }
+    .modal-option-text strong {
+      display: block;
+    }
+    .modal-option-text span {
+      font-size: 13px;
+      color: var(--gray-700);
+    }
+    .modal-cancel {
+      background: transparent;
+      border: 1px solid #e6eef0;
+      padding: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+    .modal-cancel:hover {
+      background: #f8f9fa;
+    }
+
+    /* Modal de contato do Jonas */
+    .contact-modal-content {
+      max-width: 450px;
+    }
+    .contact-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .contact-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      margin: 0 auto 15px;
+      background-size: cover;
+      background-position: center;
+      border: 3px solid var(--green-400);
+    }
+    .contact-info {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid #e6eef0;
+      transition: all 0.2s ease;
+      text-decoration: none;
+      color: inherit;
+    }
+    .contact-item:hover {
+      background: #f0f9f4;
+      border-color: var(--green-400);
+      transform: translateY(-2px);
+    }
+    .contact-icon {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 6px;
+      font-size: 18px;
+      background-size: 24px;
+      background-repeat: no-repeat;
+      background-position: center;
+    }
+    .contact-details {
+      flex: 1;
+    }
+    .contact-details strong {
+      display: block;
+      font-size: 14px;
+      color: var(--gray-700);
+    }
+    .contact-details span {
+      font-size: 15px;
+      color: var(--gray-900);
+      font-weight: 500;
+    }
+
+    /* Ícones de contato - mantidos originais */
+    .icon-whatsapp {
+      background-color: #25D366;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893-.001-3.189-1.248-6.189-3.515-8.452'/%3E%3C/svg%3E");
+    }
+    .icon-linkedin {
+      background-color: #0077b5;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z'/%3E%3C/svg%3E");
+    }
+    .icon-github {
+      background-color: #333;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z'/%3E%3C/svg%3E");
+    }
+    .icon-email {
+      background-color: #ea4335;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M12 12.713l-11.985-9.713h23.97l-11.985 9.713zm0 2.574l-12-9.725v15.438h24v-15.438l-12 9.725z'/%3E%3C/svg%3E");
+    }
+    .icon-phone {
+      background-color: #34a853;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z'/%3E%3C/svg%3E");
     }
 
     /* Media queries para responsividade */
@@ -297,7 +523,13 @@
           <img class="hero-img" src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?q=80&w=1200&auto=format&fit=crop&s=placeholder" alt="imagem destaque educação ambiental"/>
         </div>
         <div style="margin-top:12px;display:flex;justify-content:space-between;align-items:center">
-          <div class="muted">Equipe: Jonas S. de Avila • Vitor R. Corrêa • Pedro E. Kunzler • Gabriel O. Abreu • Eduardo Paier</div>
+          <div class="muted">Equipe: 
+            <span class="clickable-name" onclick="openJonasModal()">Jonas S. de Avila</span> • 
+            Vitor R. Corrêa • 
+            Pedro E. Kunzler • 
+            Gabriel O. Abreu • 
+            Eduardo Paier
+          </div>
           <div class="pill">Protótipo</div>
         </div>
       </div>
@@ -578,10 +810,114 @@
     <footer style="margin-top:20px">
       <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
         <div class="muted">© 2025 ECOCLIMA CONECTA — Protótipo</div>
-        <div class="muted">Equipe: Jonas S. de Avila, Vitor R. Corrêa, Pedro E. Kunzler, Gabriel O. Abreu, Eduardo Paier</div>
+        <div class="muted">Equipe: 
+          <span class="clickable-name" onclick="openJonasModal()">Jonas S. de Avila</span>, 
+          Vitor R. Corrêa, 
+          Pedro E. Kunzler, 
+          Gabriel O. Abreu, 
+          Eduardo Paier
+        </div>
       </div>
     </footer>
   </main>
+
+  <!-- Modal para seleção de app de navegação -->
+  <div class="modal-overlay" id="navigationModal">
+    <div class="modal-content">
+      <h3 class="modal-title">Abrir rota no:</h3>
+      <div class="modal-options">
+        <a class="modal-option" data-app="google">
+          <div class="modal-option-icon" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQXZr5PjvEGkpIMvhNO8nhobXWtl7q_JJ9Wag&s')"></div>
+          <div class="modal-option-text">
+            <strong>Google Maps</strong>
+            <span>Navegação e rotas detalhadas</span>
+          </div>
+        </a>
+        <a class="modal-option" data-app="waze">
+          <div class="modal-option-icon" style="background-image: url('https://iconlogovector.com/uploads/images/2023/03/lg-1daf6a9340f21816380f86f8271b14df58.jpg')"></div>
+          <div class="modal-option-text">
+            <strong>Waze</strong>
+            <span>Trânsito em tempo real</span>
+          </div>
+        </a>
+        <a class="modal-option" data-app="apple">
+          <div class="modal-option-icon" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRjM2PDs5Mi5zdMXXp1oDW8o1TJdB5PUHU5HVxnlhafKg5GYihZZwsKd9iWkwcA-k_0-gE&usqp=CAU')"></div>
+          <div class="modal-option-text">
+            <strong>Apple Maps</strong>
+            <span>Para usuários iOS</span>
+          </div>
+        </a>
+      </div>
+      <button class="modal-cancel" id="modalCancel">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Modal para seleção de ligação ou WhatsApp -->
+  <div class="modal-overlay" id="phoneModal">
+    <div class="modal-content">
+      <h3 class="modal-title">Contatar via:</h3>
+      <div class="modal-phone" id="modalPhoneNumber"></div>
+      <div class="modal-options">
+        <a class="modal-option" id="phoneCallOption">
+          <div class="modal-option-icon icon-phone"></div>
+          <div class="modal-option-text">
+            <strong>Ligação Telefônica</strong>
+            <span>Ligar diretamente para o número</span>
+          </div>
+        </a>
+        <a class="modal-option" id="whatsappOption">
+          <div class="modal-option-icon icon-whatsapp"></div>
+          <div class="modal-option-text">
+            <strong>WhatsApp</strong>
+            <span>Enviar mensagem pelo WhatsApp</span>
+          </div>
+        </a>
+      </div>
+      <button class="modal-cancel" id="phoneModalCancel">Cancelar</button>
+    </div>
+  </div>
+
+  <!-- Modal de contato do Jonas -->
+  <div class="modal-overlay" id="jonasModal">
+    <div class="modal-content contact-modal-content">
+      <div class="contact-header">
+        <div class="contact-avatar" style="background-image: url('https://avatars.githubusercontent.com/u/123665273?v=4')"></div>
+        <h3 class="modal-title">Jonas S. de Avila</h3>
+        <p class="muted">Desenvolvedor & Colaborador</p>
+      </div>
+      <div class="contact-info">
+        <a href="mailto:jonas.silveiradeavila@gmail.com" class="contact-item">
+          <div class="contact-icon icon-email"></div>
+          <div class="contact-details">
+            <strong>E-mail</strong>
+            <span>jonas.silveiradeavila@gmail.com</span>
+          </div>
+        </a>
+        <a href="https://wa.me/5551984447266" target="_blank" class="contact-item">
+          <div class="contact-icon icon-whatsapp"></div>
+          <div class="contact-details">
+            <strong>WhatsApp</strong>
+            <span>(51) 98444-7266</span>
+          </div>
+        </a>
+        <a href="https://linkedin.com/in/jonas-silveira-de-avila" target="_blank" class="contact-item">
+          <div class="contact-icon icon-linkedin"></div>
+          <div class="contact-details">
+            <strong>LinkedIn</strong>
+            <span>linkedin.com/in/jonas-silveira-de-avila</span>
+          </div>
+        </a>
+        <a href="https://github.com/Jonassavila" target="_blank" class="contact-item">
+          <div class="contact-icon icon-github"></div>
+          <div class="contact-details">
+            <strong>GitHub</strong>
+            <span>github.com/Jonassavila</span>
+          </div>
+        </a>
+      </div>
+      <button class="modal-cancel" id="jonasModalCancel">Fechar</button>
+    </div>
+  </div>
 
   <!-- Leaflet JS para funcionalidade do mapa -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -596,8 +932,118 @@
       });
     }
 
+    // Função para abrir modal do Jonas
+    function openJonasModal() {
+      const modal = document.getElementById('jonasModal');
+      modal.classList.add('active');
+    }
+
+    // Função para separar nome e telefone do contato
+    function parseContact(contactString) {
+      if (!contactString) return { name: '', phone: '' };
+      
+      // Procura por padrões de telefone brasileiros
+      const phoneRegex = /(\d{2}\s?\d{4,5}\s?-?\s?\d{4})/g;
+      const phoneMatch = contactString.match(phoneRegex);
+      
+      if (phoneMatch && phoneMatch.length > 0) {
+        const phone = phoneMatch[0];
+        const name = contactString.replace(phone, '').replace(/-/, '').trim();
+        return { name, phone };
+      }
+      
+      return { name: contactString, phone: '' };
+    }
+
+    // Função para formatar número de telefone com DDD entre parênteses
+    function formatPhoneNumber(phone) {
+      if (!phone) return '';
+      
+      // Remove tudo que não é dígito
+      const cleaned = phone.replace(/\D/g, '');
+      
+      // Formata no padrão (XX) XXXXX-XXXX ou (XX) XXXX-XXXX
+      if (cleaned.length === 11) {
+        return `(${cleaned.substring(0,2)}) ${cleaned.substring(2,7)}-${cleaned.substring(7)}`;
+      } else if (cleaned.length === 10) {
+        return `(${cleaned.substring(0,2)}) ${cleaned.substring(2,6)}-${cleaned.substring(6)}`;
+      }
+      
+      return phone;
+    }
+
+    // Função para criar link de telefone
+    function createPhoneLink(phone) {
+      if (!phone) return '';
+      const cleaned = phone.replace(/\D/g, '');
+      return `tel:+55${cleaned}`;
+    }
+
+    // Função para criar link do WhatsApp
+    function createWhatsAppLink(phone) {
+      if (!phone) return '';
+      const cleaned = phone.replace(/\D/g, '');
+      // Remove o 0 do início se houver
+      const formattedPhone = cleaned.startsWith('0') ? cleaned.substring(1) : cleaned;
+      return `https://wa.me/55${formattedPhone}`;
+    }
+
+    // Variáveis para controle dos modais
+    let currentAddress = '';
+    let currentPhone = '';
+
+    // Função para abrir modal de seleção de app de navegação
+    function openNavigationModal(address) {
+      currentAddress = address;
+      const modal = document.getElementById('navigationModal');
+      modal.classList.add('active');
+    }
+
+    // Função para abrir modal de seleção de telefone/WhatsApp
+    function openPhoneModal(phone) {
+      currentPhone = phone;
+      const modal = document.getElementById('phoneModal');
+      const modalPhoneNumber = document.getElementById('modalPhoneNumber');
+      const phoneCallOption = document.getElementById('phoneCallOption');
+      const whatsappOption = document.getElementById('whatsappOption');
+      
+      // Atualiza o número exibido no modal
+      modalPhoneNumber.textContent = formatPhoneNumber(phone);
+      
+      // Configura os links
+      phoneCallOption.href = createPhoneLink(phone);
+      whatsappOption.href = createWhatsAppLink(phone);
+      
+      modal.classList.add('active');
+    }
+
+    // Função para fechar modais
+    function closeModals() {
+      const modals = document.querySelectorAll('.modal-overlay');
+      modals.forEach(modal => {
+        modal.classList.remove('active');
+      });
+      currentAddress = '';
+      currentPhone = '';
+    }
+
+    // Função para criar link de rota baseado no app selecionado
+    function createRouteLink(address, app = 'google') {
+      const encodedAddress = encodeURIComponent(address);
+      
+      switch(app) {
+        case 'google':
+          return `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+        case 'waze':
+          return `https://waze.com/ul?q=${encodedAddress}&navigate=yes`;
+        case 'apple':
+          return `https://maps.apple.com/?daddr=${encodedAddress}&dirflg=d`;
+        default:
+          return `https://www.google.com/maps/dir/?api=1&destination=${encodedAddress}`;
+      }
+    }
+
     // Dados mockados dos pontos de descarte
-    // Em produção, isso viria de uma API ou banco de dados
     const initialPoints = [
       { 
         id: 1, 
@@ -661,6 +1107,19 @@
         notes: 'Resíduos: Todo tipo de resíduo',
         cnpj: '41.182.707/30001-78',
         site: 'https://www.recicla.rs'
+      },
+       { 
+        id: 6, 
+        name: 'Maiquel Melo dos Santos LTDA', 
+        type: 'reciclador',
+        lat: -29.75231, 
+        lng: -51.15017,
+        address: 'Avenida Caxias do Sul, 769, Rio dos Sinos, São Leopoldo, RS, 93110-000', 
+        contact: 'Maiquel Melo dos Santos - 51 99458-6877', 
+        email: 'maiquelmetal@gmail.com',
+        notes: 'Resíduos: Todo tipo de resíduo',
+        cnpj: '13.682.629/0002-91',
+        site: 'https://www.instagram.com/sucatamaiquel/ '
       }
     ];
 
@@ -687,6 +1146,29 @@
       // Event listeners para filtros
       document.getElementById('applyFilterBtn').addEventListener('click', applyListFilter);
       document.getElementById('list-search').addEventListener('input', applyListFilter);
+
+      // Event listeners para os modais
+      document.getElementById('modalCancel').addEventListener('click', closeModals);
+      document.getElementById('phoneModalCancel').addEventListener('click', closeModals);
+      document.getElementById('jonasModalCancel').addEventListener('click', closeModals);
+      
+      document.querySelectorAll('.modal-option[data-app]').forEach(option => {
+        option.addEventListener('click', function() {
+          const app = this.getAttribute('data-app');
+          const routeUrl = createRouteLink(currentAddress, app);
+          window.open(routeUrl, '_blank');
+          closeModals();
+        });
+      });
+
+      // Fechar modais ao clicar fora
+      document.querySelectorAll('.modal-overlay').forEach(modal => {
+        modal.addEventListener('click', function(e) {
+          if (e.target === this) {
+            closeModals();
+          }
+        });
+      });
     }
 
     // Função para renderizar marcadores no mapa
@@ -699,15 +1181,20 @@
       points.forEach(item => {
         const marker = L.marker([item.lat, item.lng]).addTo(map);
         
+        // Processar informações de contato
+        const contactInfo = parseContact(item.contact);
+        const formattedPhone = formatPhoneNumber(contactInfo.phone);
+        
         // Conteúdo do popup com informações do ponto
         const popupContent = `
           <div style="min-width:200px">
             <strong>${escapeHtml(item.name)}</strong>
             <div style="font-size:13px;color:#555">${escapeHtml(item.type)}</div>
             <div style="margin-top:8px;font-size:13px">
-              ${escapeHtml(item.address || '')}<br/>
-              Contato: ${escapeHtml(item.contact || '')}<br/>
-              ${item.email ? `E-mail: ${escapeHtml(item.email)}<br/>` : ''}
+              <a href="#" onclick="openNavigationModal('${escapeHtml(item.address)}'); return false;" class="clickable-address">${escapeHtml(item.address || '')}</a><br/>
+              ${contactInfo.name ? `Contato: ${escapeHtml(contactInfo.name)}<br/>` : ''}
+              ${formattedPhone ? `Telefone: <a href="#" onclick="openPhoneModal('${contactInfo.phone}'); return false;" class="clickable-phone">${formattedPhone}</a><br/>` : ''}
+              ${item.email ? `E-mail: <a href="mailto:${escapeHtml(item.email)}">${escapeHtml(item.email)}</a><br/>` : ''}
               ${item.cnpj ? `CNPJ: ${escapeHtml(item.cnpj)}<br/>` : ''}
               ${item.site ? `Site: <a href="${escapeHtml(item.site)}" target="_blank">${escapeHtml(item.site)}</a><br/>` : ''}
               <small>${escapeHtml(item.notes || '')}</small>
@@ -734,15 +1221,20 @@
       
       // Criar card para cada ponto
       points.forEach(item => {
+        // Processar informações de contato
+        const contactInfo = parseContact(item.contact);
+        const formattedPhone = formatPhoneNumber(contactInfo.phone);
+        
         const div = document.createElement('div');
         div.className = 'listing-card';
         div.innerHTML = `
           <strong>${escapeHtml(item.name)}</strong>
-          <div class="listing-meta">${escapeHtml(item.address || '')}</div>
+          <a href="#" onclick="openNavigationModal('${escapeHtml(item.address)}'); return false;" class="clickable-address listing-meta">${escapeHtml(item.address || '')}</a>
           <div style="margin-top:6px;font-size:13px">
-            Contato: ${escapeHtml(item.contact || '')} • 
+            ${contactInfo.name ? `Contato: ${escapeHtml(contactInfo.name)}<br/>` : ''}
+            ${formattedPhone ? `Telefone: <a href="#" onclick="openPhoneModal('${contactInfo.phone}'); return false;" class="clickable-phone">${formattedPhone}</a> • ` : ''}
             <span style="font-weight:700">${escapeHtml(item.type)}</span><br/>
-            ${item.email ? `<small>E-mail: ${escapeHtml(item.email)}</small><br/>` : ''}
+            ${item.email ? `<small>E-mail: <a href="mailto:${escapeHtml(item.email)}">${escapeHtml(item.email)}</a></small><br/>` : ''}
             <small>${escapeHtml(item.notes || '')}</small>
           </div>`;
         
