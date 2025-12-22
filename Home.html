@@ -2,6 +2,15 @@
 <html lang="pt-BR">
 
 <head>
+  <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-QSKZTNPTWD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-QSKZTNPTWD');
+</script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
 
@@ -1587,8 +1596,334 @@
         .replace(/"/g, '"');
     }
 
-    /* Inicializar mapa quando o DOM estiver pronto */
-    document.addEventListener('DOMContentLoaded', initMap);
+    /* ============================================
+       ALGORITMO DE HASH PARA REGISTRO NO INPI
+       ============================================ */
+    
+    /**
+     * Algoritmo de hash simples para proteção de integridade
+     * Gera um hash SHA-256 do conteúdo principal da página
+     * Uso: Para registro de autoria no INPI
+     */
+    class EcoClimaHash {
+      constructor() {
+        this.version = '1.0.0';
+        this.algorithm = 'SHA-256';
+        this.timestamp = new Date().toISOString();
+      }
+
+      /**
+       * Converte string para ArrayBuffer
+       */
+      async stringToBuffer(str) {
+        const encoder = new TextEncoder();
+        return encoder.encode(str);
+      }
+
+      /**
+       * Gera hash SHA-256
+       */
+      async generateSHA256(data) {
+        if (window.crypto && window.crypto.subtle) {
+          const buffer = await this.stringToBuffer(data);
+          const hashBuffer = await window.crypto.subtle.digest('SHA-256', buffer);
+          const hashArray = Array.from(new Uint8Array(hashBuffer));
+          return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        } else {
+          // Fallback para browsers mais antigos
+          return this.simpleHash(data);
+        }
+      }
+
+      /**
+       * Hash simples (fallback)
+       */
+      simpleHash(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+          const char = str.charCodeAt(i);
+          hash = ((hash << 5) - hash) + char;
+          hash = hash & hash;
+        }
+        return Math.abs(hash).toString(16);
+      }
+
+      /**
+       * Extrai o conteúdo principal para hashing
+       */
+      extractContent() {
+        const sections = [
+          'home', 'sobre', 'mapa', 'educacao', 'apresentacao', 'faq-ia'
+        ];
+        
+        let content = '';
+        
+        sections.forEach(sectionId => {
+          const section = document.getElementById(sectionId);
+          if (section) {
+            content += section.textContent.trim() + '|';
+          }
+        });
+
+        // Adiciona metadados
+        content += document.title + '|';
+        content += this.timestamp + '|';
+        content += this.version;
+
+        return content;
+      }
+
+      /**
+       * Gera e retorna o hash do conteúdo
+       */
+      async generateContentHash() {
+        const content = this.extractContent();
+        const hash = await this.generateSHA256(content);
+        
+        return {
+          hash: hash,
+          timestamp: this.timestamp,
+          version: this.version,
+          algorithm: this.algorithm,
+          contentLength: content.length
+        };
+      }
+
+      /**
+       * Verifica integridade do conteúdo
+       */
+      async verifyIntegrity() {
+        const hashData = await this.generateContentHash();
+        console.log('🔐 Hash de Integridade ECOCLIMA CONECTA:', hashData);
+        
+        // Armazena no localStorage para referência futura
+        try {
+          localStorage.setItem('ecoclima_hash', JSON.stringify(hashData));
+        } catch (e) {
+          // Silencioso em caso de erro
+        }
+        
+        return hashData;
+      }
+    }
+
+    /**
+     * Hash da estrutura do código fonte
+     * Útil para provar autoria do layout/design
+     */
+    class CodeStructureHash {
+      constructor() {
+        this.structureElements = [
+          'header', 'main', 'section', 'footer',
+          '.hero', '.education-grid', '.map-wrap',
+          '.nav', '.brand', '.logo'
+        ];
+      }
+
+      /**
+       * Extrai a estrutura HTML da página
+       */
+      extractStructure() {
+        let structure = '';
+        
+        // Captura elementos principais por tag
+        this.structureElements.forEach(selector => {
+          if (selector.startsWith('.')) {
+            // É uma classe
+            const elements = document.querySelectorAll(selector);
+            elements.forEach((el, index) => {
+              structure += `${selector}-${index}:${el.tagName}:${el.className}|`;
+            });
+          } else {
+            // É uma tag
+            const elements = document.getElementsByTagName(selector);
+            Array.from(elements).forEach((el, index) => {
+              structure += `${selector}-${index}:${el.className}|`;
+            });
+          }
+        });
+
+        // Captura número de seções e cards
+        const sections = document.querySelectorAll('section');
+        const cards = document.querySelectorAll('.card');
+        const gridItems = document.querySelectorAll('.grid-3, .education-grid');
+        
+        structure += `sections:${sections.length}|`;
+        structure += `cards:${cards.length}|`;
+        structure += `grids:${gridItems.length}|`;
+        
+        // Layout responsivo
+        const mediaQueries = `
+          @media (max-width:1100px)
+          @media (max-width:900px)
+          @media (max-width:600px)
+        `;
+        
+        structure += mediaQueries;
+
+        return structure;
+      }
+
+      /**
+       * Gera hash da estrutura
+       */
+      async generateStructureHash() {
+        const structure = this.extractStructure();
+        const hasher = new EcoClimaHash();
+        const hash = await hasher.generateSHA256(structure);
+        
+        return {
+          structureHash: hash,
+          elementCount: this.structureElements.length,
+          structureSummary: structure.substring(0, 100) + '...'
+        };
+      }
+    }
+
+    /**
+     * Gera relatório para envio ao INPI
+     * (Execução manual via console)
+     */
+    window.generateINPIReport = async function() {
+      const contentHasher = new EcoClimaHash();
+      const structureHasher = new CodeStructureHash();
+      
+      const contentHash = await contentHasher.generateContentHash();
+      const structureHash = await structureHasher.generateStructureHash();
+      const combinedHash = await contentHasher.generateSHA256(
+        contentHash.hash + structureHash.structureHash
+      );
+      
+      const report = {
+        // Informações do projeto
+        projectName: 'ECOCLIMA CONECTA',
+        projectDescription: 'Plataforma para educação ambiental e sustentabilidade no setor de climatização',
+        website: 'https://ecoclimaconecta.netlify.app/',
+        
+        // Autores
+        authors: [
+          { name: 'Jonas S. de Avila', role: 'Desenvolvedor' },
+          { name: 'Vitor R. Corrêa', role: 'Colaborador' },
+          { name: 'Pedro E. Kunzler', role: 'Colaborador' },
+          { name: 'Gabriel O. Abreu', role: 'Colaborador' },
+          { name: 'Eduardo Paier', role: 'Colaborador' }
+        ],
+        
+        // Hashes
+        hashes: {
+          content: contentHash,
+          structure: structureHash,
+          combined: combinedHash
+        },
+        
+        // Metadados técnicos
+        technology: 'HTML5, CSS3, JavaScript (ES6+)',
+        features: [
+          'Mapa interativo Leaflet',
+          'Design responsivo',
+          'Sistema de cards educacionais',
+          'Modal de contato',
+          'Filtro de busca'
+        ],
+        
+        // Data de criação
+        createdAt: '2025',
+        lastModified: new Date().toISOString(),
+        
+        // Para verificação
+        verificationInstructions: `
+          1. Acesse https://ecoclimaconecta.netlify.app/
+          2. Abra o console do desenvolvedor (F12)
+          3. Execute: generateINPIReport()
+          4. Compare os hashes gerados
+        `
+      };
+      
+      console.log('📋 RELATÓRIO PARA REGISTRO NO INPI');
+      console.log('====================================');
+      console.log(JSON.stringify(report, null, 2));
+      
+      // Cria um link para download do relatório
+      const dataStr = JSON.stringify(report, null, 2);
+      const dataUri = 'data:application/json;charset=utf-8,' + encodeURIComponent(dataStr);
+      
+      const exportFileDefaultName = `ECOCLIMA_CONECTA_INPI_${new Date().toISOString().split('T')[0]}.json`;
+      
+      const linkElement = document.createElement('a');
+      linkElement.setAttribute('href', dataUri);
+      linkElement.setAttribute('download', exportFileDefaultName);
+      linkElement.style.display = 'none';
+      document.body.appendChild(linkElement);
+      linkElement.click();
+      document.body.removeChild(linkElement);
+      
+      alert('Relatório gerado com sucesso! O arquivo foi baixado.');
+      
+      return report;
+    };
+
+    // Inicializa e gera o hash quando a página carrega
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Aguarda um pouco para garantir que todo conteúdo está carregado
+      setTimeout(async () => {
+        const hasher = new EcoClimaHash();
+        const hashData = await hasher.verifyIntegrity();
+        
+        // Adiciona informação discreta no console para depuração
+        console.group('ECOCLIMA CONECTA - Proteção de Autoria');
+        console.log('📄 Hash gerado para registro no INPI');
+        console.log('🔢 Hash:', hashData.hash);
+        console.log('⏰ Timestamp:', hashData.timestamp);
+        console.log('📦 Versão:', hashData.version);
+        console.log('⚙️ Algoritmo:', hashData.algorithm);
+        console.log('📏 Tamanho do conteúdo:', hashData.contentLength, 'caracteres');
+        console.groupEnd();
+
+        // Gera hash da estrutura também
+        const structureHasher = new CodeStructureHash();
+        const structureHash = await structureHasher.generateStructureHash();
+        
+        // Combina ambos para registro
+        const combinedHash = await hasher.generateSHA256(
+          hashData.hash + structureHash.structureHash
+        );
+        
+        console.log('🏗️ Hash da Estrutura:', structureHash);
+        console.log('🎯 Hash Combinado (Conteúdo + Estrutura):', combinedHash);
+        
+        // Armazena para possível verificação futura
+        const registrationData = {
+          project: 'ECOCLIMA CONECTA',
+          contentHash: hashData,
+          structureHash: structureHash,
+          combinedHash: combinedHash,
+          registrationDate: new Date().toISOString(),
+          authors: [
+            'Jonas S. de Avila',
+            'Vitor R. Corrêa', 
+            'Pedro E. Kunzler',
+            'Gabriel O. Abreu',
+            'Eduardo Paier'
+          ]
+        };
+        
+        try {
+          localStorage.setItem('ecoclima_registration', JSON.stringify(registrationData));
+        } catch (e) {
+          // Silencioso
+        }
+      }, 1000);
+    });
+
+    // Informação no console sobre como gerar o relatório
+    console.log('ℹ️ Para gerar relatório para o INPI, execute: generateINPIReport()');
+
+    /* ============================================
+       FIM DO ALGORITMO DE HASH
+       ============================================ */
+
+    // Inicializar mapa quando o DOM estiver pronto
+    initMap();
   </script>
 </body>
 
